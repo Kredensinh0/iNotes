@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">iNOTES</string>
+    <string name="note_not_updated">Note cannot be updated!</string>
+    <string name="note_saved">Note has been saved!</string>
+    <string name="note_updated">Note has been updated!</string>
+    <string name="note_cancelled">Note has been cancelled!</string>
+    <string name="edit_note">Edit note</string>
+    <string name="add_note">Add note</string>
+    <string name="note_deleted">Note has been deleted!</string>
+    <string name="note_cannot_be_empty">Note cannot be empty!</string>
+    <string name="location_not_enabled">Your locations setting is not enabled. Please enable it in settings menu. Otherwise You won\'t be able to read your note\'s location.</string>
+    <string name="enable_location_title">Enable Location</string>
+    <string name="location_settings">Location Settings</string>
+    <string name="cancel">Cancel</string>
+</resources>
