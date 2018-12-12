@@ -17,8 +17,6 @@ public class Category {
         this.title = title;
     }
 
-    //TODO: pre-populate with "uncategorized" category (non-deleteable)
-
     protected Category(Parcel in) {
         id = in.readInt();
         title = in.readString();
@@ -46,7 +44,7 @@ public class Category {
     }
 
     public static Category[] populateData() {
-        return new Category[] {
+        return new Category[]{
                 new Category("All notes"),
                 new Category("Uncategorized")
         };

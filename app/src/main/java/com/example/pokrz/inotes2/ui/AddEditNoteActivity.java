@@ -48,6 +48,7 @@ public class AddEditNoteActivity extends AppCompatActivity {
     public static final String EXTRA_CATEGORY_TITLE = "com.example.pokrz.inotes2.ui.EXTRA_CATEGORY_TITLE";
     private static final int PICK_IMAGE = 1;
 
+    private TextView toolbarTitle;
     private EditText editTextTitle;
     private EditText editTextDescription;
     private ImageView image_view_optional_photo;
@@ -60,13 +61,14 @@ public class AddEditNoteActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_note);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         TabLayout tabLayout = findViewById(R.id.tab_layout);
         tabLayout.setVisibility(View.GONE);
-        TextView toolbarTitle = toolbar.findViewById(R.id.toolbar_title);
+        toolbarTitle = toolbar.findViewById(R.id.toolbar_title);
         SearchView searchViewToolbar = toolbar.findViewById(R.id.search_view_toolbar);
         searchViewToolbar.setVisibility(View.GONE);
         editTextTitle = findViewById(R.id.edit_text_title);
@@ -81,11 +83,24 @@ public class AddEditNoteActivity extends AppCompatActivity {
             ArrayAdapter<Category> categoryArrayAdapter = new ArrayAdapter<Category>(this, android.R.layout.simple_spinner_item, categoriesFinal);
             categoryArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinner.setAdapter(categoryArrayAdapter);
-            categoriesList.clear();
-            categoriesList.addAll(categories);
+            categoriesList = categoriesFinal;
+
+            Intent intent = getIntent();
+            if (intent.hasExtra(EXTRA_ID)) {
+                String categoryTitle = intent.getStringExtra(EXTRA_CATEGORY_TITLE);
+                for (int i = 0; i < categoriesList.size(); i++) {
+                    if (categoriesList.get(i).getTitle().equals(categoryTitle)) {
+                        spinner.setSelection(i);
+                    }
+                }
+            }
+
         });
+        
+        setupNote();
+    }
 
-
+    private void setupNote() {
         Intent intent = getIntent();
         if (intent.hasExtra(EXTRA_ID)) {
             toolbarTitle.setText(R.string.edit_note);
@@ -103,19 +118,11 @@ public class AddEditNoteActivity extends AppCompatActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                String categoryTitle = intent.getStringExtra(EXTRA_CATEGORY_TITLE);
-                for(int i = 0 ; i < categoriesList.size(); i++) {
-                    if(categoriesList.get(i).getTitle().equals(categoryTitle)) {
-                        spinner.setSelection(i);
-                    }
-                }
             }
         } else {
             toolbarTitle.setText(R.string.add_note);
         }
-
     }
-
     public Category getSelectedCategory() {
         return (Category) spinner.getSelectedItem();
     }

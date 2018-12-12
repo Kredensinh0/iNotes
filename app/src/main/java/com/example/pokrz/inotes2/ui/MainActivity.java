@@ -105,9 +105,10 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                Category category = categoryList.get(viewHolder.getAdapterPosition());
-                categoryViewModel.delete(category);
-                Snackbar.make(findViewById(R.id.fragment_container), "Category has been deleted!", Snackbar.LENGTH_LONG).show();
+                //TODO: dialog popup with warning, delete all notes with chosen category and then delete category
+//                Category category = categoryList.get(viewHolder.getAdapterPosition());
+//                categoryViewModel.delete(category);
+//                Snackbar.make(findViewById(R.id.fragment_container), "Category has been deleted!", Snackbar.LENGTH_LONG).show();
             }
         }).attachToRecyclerView(recyclerViewNavigation);
 
@@ -241,5 +242,3 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }
-
-//TODO: add onClickListener to categories and adjust filter in notes adapter
