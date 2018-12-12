@@ -17,6 +17,9 @@ public interface CategoryDao {
     @Insert
     void insert(Category data);
 
+    @Insert
+    void insertAll(Category ... categories);
+
     @Delete
     void delete(Category data);
 

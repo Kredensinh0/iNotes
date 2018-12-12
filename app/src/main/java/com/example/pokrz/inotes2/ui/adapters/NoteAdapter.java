@@ -142,10 +142,10 @@ public class NoteAdapter extends ListAdapter<Note, NoteAdapter.NoteHolder> imple
         @Override
         protected FilterResults performFiltering(CharSequence charSequence) {
             List<Note> filteredNotes = new ArrayList<>();
-            if (charSequence == null || charSequence.length() == 0 || charSequence == "") {
+            if (charSequence == null || charSequence.length() == 0 || charSequence == "" || charSequence.equals("cat:All notes")) {
                 filteredNotes.addAll(notesFull);
             } else {
-                if(charSequence.subSequence(0, 4).equals("cat:")) {
+                if (charSequence.subSequence(0, 4).equals("cat:")) {
                     String filterPattern = charSequence.subSequence(4, charSequence.length()).toString();
                     for (Note note : notesFull) {
                         if (note.getCategoryTitle().contains(filterPattern)) {
@@ -160,6 +160,7 @@ public class NoteAdapter extends ListAdapter<Note, NoteAdapter.NoteHolder> imple
                             filteredNotes.add(note);
                         }
                     }
+
                 }
             }
             FilterResults results = new FilterResults();

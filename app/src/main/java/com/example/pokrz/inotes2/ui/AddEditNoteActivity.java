@@ -76,7 +76,9 @@ public class AddEditNoteActivity extends AppCompatActivity {
         CategoryViewModel categoryViewModel = ViewModelProviders.of(this).get(CategoryViewModel.class);
         categoryViewModel.getAllCategories().observe(this, categories -> {
             spinner = findViewById(R.id.category_spinner);
-            ArrayAdapter<Category> categoryArrayAdapter = new ArrayAdapter<Category>(this, android.R.layout.simple_spinner_item, categories);
+            ArrayList<Category> categoriesFinal = new ArrayList<>(categories);
+            categoriesFinal.remove(0);
+            ArrayAdapter<Category> categoryArrayAdapter = new ArrayAdapter<Category>(this, android.R.layout.simple_spinner_item, categoriesFinal);
             categoryArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinner.setAdapter(categoryArrayAdapter);
             categoriesList.clear();

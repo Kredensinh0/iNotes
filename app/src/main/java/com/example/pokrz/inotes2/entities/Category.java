@@ -7,7 +7,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity
-public class Category implements Parcelable {
+public class Category {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
@@ -45,27 +45,10 @@ public class Category implements Parcelable {
         return title;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public static Category[] populateData() {
+        return new Category[] {
+                new Category("All notes"),
+                new Category("Uncategorized")
+        };
     }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeStringArray(new String[] {
-                String.valueOf(this.id),
-                this.title});
-    }
-
-    public static final Creator<Category> CREATOR = new Creator<Category>() {
-        @Override
-        public Category createFromParcel(Parcel in) {
-            return new Category(in);
-        }
-
-        @Override
-        public Category[] newArray(int size) {
-            return new Category[size];
-        }
-    };
 }

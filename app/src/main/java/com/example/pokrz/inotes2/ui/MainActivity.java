@@ -16,9 +16,11 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.pokrz.inotes2.CategoryViewModel;
+import com.example.pokrz.inotes2.NoteViewModel;
 import com.example.pokrz.inotes2.R;
 import com.example.pokrz.inotes2.SectionsStatePagerAdapter;
 import com.example.pokrz.inotes2.entities.Category;
+import com.example.pokrz.inotes2.entities.Note;
 import com.example.pokrz.inotes2.ui.adapters.CategoryDrawerAdapter;
 import com.example.pokrz.inotes2.ui.adapters.NoteAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -47,15 +49,13 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static Location location;
-    private LocationManager locationManager;
-
     public static final int FRAGMENT_NOTES = 0;
     public static final int FRAGMENT_MAP = 1;
 
+    public static Location location;
+    private LocationManager locationManager;
     private CategoryViewModel categoryViewModel;
     private List<Category> categoryList;
-
     public static CategoryDrawerAdapter categoryAdapter;
 
     @Override
@@ -105,7 +105,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                categoryViewModel.delete(categoryAdapter.getCategoryAt(viewHolder.getAdapterPosition()));
+                Category category = categoryList.get(viewHolder.getAdapterPosition());
+                categoryViewModel.delete(category);
                 Snackbar.make(findViewById(R.id.fragment_container), "Category has been deleted!", Snackbar.LENGTH_LONG).show();
             }
         }).attachToRecyclerView(recyclerViewNavigation);
@@ -173,10 +174,9 @@ public class MainActivity extends AppCompatActivity {
                                 for (Category cat : categoryList) {
                                     if (cat.getTitle().trim().toLowerCase().equals(text.trim().toLowerCase())) {
                                         Toast.makeText(this, "This category already exists!", Toast.LENGTH_LONG).show();
-                                    } else {
-                                        categoryViewModel.insert(new Category(text));
                                     }
                                 }
+                                categoryViewModel.insert(new Category(text));
                             } else {
                                 Toast.makeText(this, "Category title cannot be empty!", Toast.LENGTH_LONG).show();
                             }
