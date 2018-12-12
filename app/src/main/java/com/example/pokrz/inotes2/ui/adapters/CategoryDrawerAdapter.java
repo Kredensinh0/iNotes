@@ -7,7 +7,6 @@ import android.widget.TextView;
 
 import com.example.pokrz.inotes2.R;
 import com.example.pokrz.inotes2.entities.Category;
-import com.example.pokrz.inotes2.entities.Note;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,9 +14,10 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.CategoryHolder> {
+public class CategoryDrawerAdapter extends RecyclerView.Adapter<CategoryDrawerAdapter.CategoryHolder> {
 
     private List<Category> categories = new ArrayList<>();
+    private OnItemClickListener onItemClickListener;
 
     @NonNull
     @Override
@@ -38,6 +38,11 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         return categories.size();
     }
 
+    public Category getCategoryAt(int position) {
+        return categories.get(position);
+    }
+
+
     public void setCategories(List<Category> categories) {
         this.categories = categories;
         notifyDataSetChanged();
@@ -50,8 +55,22 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         public CategoryHolder(@NonNull View itemView) {
             super(itemView);
             textViewCategoryTitle = itemView.findViewById(R.id.text_view_category_title_drawer_item);
+
+            itemView.setOnClickListener(view -> {
+                int position = getAdapterPosition();
+                if (onItemClickListener != null && position != RecyclerView.NO_POSITION) {
+                    onItemClickListener.onItemClick(categories.get(position));
+                }
+            });
         }
+    }
 
+    public interface OnItemClickListener {
+        void onItemClick(Category category);
 
+    }
+
+    public void setOnItemClickListener(CategoryDrawerAdapter.OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
     }
 }

@@ -32,7 +32,7 @@
             android:id="@+id/edit_text_description"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/image_view_optional_photo"
+            android:layout_above="@+id/category_spinner"
             android:layout_below="@id/edit_text_title"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
@@ -40,6 +40,19 @@
             android:gravity="top|left"
             android:hint="Write your note here..."
             android:inputType="textMultiLine" />
+
+        <Spinner
+            android:id="@+id/category_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/image_view_optional_photo"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:dropDownWidth="match_parent"
+            android:spinnerMode="dialog" />
 
         <ImageView
             android:id="@+id/image_view_optional_photo"
@@ -50,6 +63,8 @@
             android:layout_marginEnd="24dp"
             android:visibility="visible"
             tools:srcCompat="@tools:sample/avatars" />
+
+
 
     </RelativeLayout>
 

@@ -63,7 +63,6 @@ public class NoteAdapter extends ListAdapter<Note, NoteAdapter.NoteHolder> imple
         notesFull = new ArrayList<>(notes);
     }
 
-
     @NonNull
     @Override
     public NoteHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -146,11 +145,20 @@ public class NoteAdapter extends ListAdapter<Note, NoteAdapter.NoteHolder> imple
             if (charSequence == null || charSequence.length() == 0 || charSequence == "") {
                 filteredNotes.addAll(notesFull);
             } else {
-                String filterPattern = charSequence.toString().toLowerCase().trim();
-                for (Note note : notesFull) {
-                    if (note.getTitle().toLowerCase().contains(filterPattern)
-                            || note.getDescription().toLowerCase().contains(filterPattern)) {
-                        filteredNotes.add(note);
+                if(charSequence.subSequence(0, 4).equals("cat:")) {
+                    String filterPattern = charSequence.subSequence(4, charSequence.length()).toString();
+                    for (Note note : notesFull) {
+                        if (note.getCategoryTitle().contains(filterPattern)) {
+                            filteredNotes.add(note);
+                        }
+                    }
+                } else {
+                    String filterPattern = charSequence.toString().toLowerCase().trim();
+                    for (Note note : notesFull) {
+                        if (note.getTitle().toLowerCase().contains(filterPattern)
+                                || note.getDescription().toLowerCase().contains(filterPattern)) {
+                            filteredNotes.add(note);
+                        }
                     }
                 }
             }

@@ -6,7 +6,6 @@ import android.location.Location;
 import java.util.Date;
 
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
 @Entity

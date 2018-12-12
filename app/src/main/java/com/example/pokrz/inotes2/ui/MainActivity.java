@@ -19,14 +19,18 @@ import com.example.pokrz.inotes2.CategoryViewModel;
 import com.example.pokrz.inotes2.R;
 import com.example.pokrz.inotes2.SectionsStatePagerAdapter;
 import com.example.pokrz.inotes2.entities.Category;
-import com.example.pokrz.inotes2.ui.adapters.CategoryAdapter;
+import com.example.pokrz.inotes2.ui.adapters.CategoryDrawerAdapter;
+import com.example.pokrz.inotes2.ui.adapters.NoteAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.yarolegovich.lovelydialog.LovelyTextInputDialog;
 
+import java.util.List;
 import java.util.Objects;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -35,6 +39,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
@@ -49,6 +54,9 @@ public class MainActivity extends AppCompatActivity {
     public static final int FRAGMENT_MAP = 1;
 
     private CategoryViewModel categoryViewModel;
+    private List<Category> categoryList;
+
+    public static CategoryDrawerAdapter categoryAdapter;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -80,13 +88,27 @@ public class MainActivity extends AppCompatActivity {
         NavigationView navigationView = findViewById(R.id.nav_view);
         RecyclerView recyclerViewNavigation = navigationView.findViewById(R.id.recycler_view_navigation);
         recyclerViewNavigation.setLayoutManager(new LinearLayoutManager(this));
-        CategoryAdapter categoryAdapter = new CategoryAdapter();
+        categoryAdapter = new CategoryDrawerAdapter();
         recyclerViewNavigation.setAdapter(categoryAdapter);
 
         categoryViewModel = ViewModelProviders.of(this).get(CategoryViewModel.class);
         categoryViewModel.getAllCategories().observe(this, categories -> {
+            categoryList = categories;
             categoryAdapter.setCategories(categories);
         });
+
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                categoryViewModel.delete(categoryAdapter.getCategoryAt(viewHolder.getAdapterPosition()));
+                Snackbar.make(findViewById(R.id.fragment_container), "Category has been deleted!", Snackbar.LENGTH_LONG).show();
+            }
+        }).attachToRecyclerView(recyclerViewNavigation);
 
     }
 
@@ -116,15 +138,14 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-
             }
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-
             }
         });
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -147,20 +168,17 @@ public class MainActivity extends AppCompatActivity {
                         .setTopColorRes(R.color.colorPrimary)
                         .setTitle("New category title: ")
                         .setIcon(R.drawable.ic_add_to_collection)
-                        .setInputFilter(R.string.cancel, new LovelyTextInputDialog.TextFilter() {
-                            @Override
-                            public boolean check(String text) {
-//                                return text.matches("\\w+");
-                                return true;
-                            }
-                        })
-                        .setConfirmButton(android.R.string.ok, new LovelyTextInputDialog.OnTextInputConfirmListener() {
-                            @Override
-                            public void onTextInputConfirmed(String text) {
-                                if (!text.trim().isEmpty()) {
-                                    categoryViewModel.insert(new Category(text));
+                        .setConfirmButton(android.R.string.ok, text -> {
+                            if (!text.trim().isEmpty()) {
+                                for (Category cat : categoryList) {
+                                    if (cat.getTitle().trim().toLowerCase().equals(text.trim().toLowerCase())) {
+                                        Toast.makeText(this, "This category already exists!", Toast.LENGTH_LONG).show();
+                                    } else {
+                                        categoryViewModel.insert(new Category(text));
+                                    }
                                 }
-                                Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(this, "Category title cannot be empty!", Toast.LENGTH_LONG).show();
                             }
                         })
                         .show();
@@ -223,6 +241,5 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }
-
 
 //TODO: add onClickListener to categories and adjust filter in notes adapter

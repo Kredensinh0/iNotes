@@ -53,6 +53,7 @@ public class FragmentNotes extends Fragment implements SearchView.OnQueryTextLis
             intent.putExtra(AddEditNoteActivity.EXTRA_ID, note.getId());
             intent.putExtra(AddEditNoteActivity.EXTRA_DATE_CREATED, note.getDateCreated());
             intent.putExtra(AddEditNoteActivity.EXTRA_IMAGE_PATH, note.getOptionalImagePath());
+            intent.putExtra(AddEditNoteActivity.EXTRA_CATEGORY_TITLE, note.getCategoryTitle());
             startActivityForResult(intent, EDIT_NOTE_REQUEST);
         });
         noteViewModel = ViewModelProviders.of(this).get(NoteViewModel.class);
@@ -98,6 +99,9 @@ public class FragmentNotes extends Fragment implements SearchView.OnQueryTextLis
         SearchView searchView = toolbar.findViewById(R.id.search_view_toolbar);
         searchView.setOnQueryTextListener(this);
 
+        MainActivity.categoryAdapter.setOnItemClickListener(category -> {
+            noteAdapter.getFilter().filter("cat:" + category.getTitle());
+        });
         return view;
     }
 
@@ -111,8 +115,9 @@ public class FragmentNotes extends Fragment implements SearchView.OnQueryTextLis
             Date dateCreated = (Date) data.getSerializableExtra(AddEditNoteActivity.EXTRA_DATE_CREATED);
             Date dateUpdated = (Date) data.getSerializableExtra(AddEditNoteActivity.EXTRA_DATE_UPDATED);
             String bitmapPath = data.getStringExtra(AddEditNoteActivity.EXTRA_IMAGE_PATH);
+            String categoryTitle = data.getStringExtra(AddEditNoteActivity.EXTRA_CATEGORY_TITLE);
 
-            Note note = new Note(title, description, dateCreated, dateUpdated, MainActivity.location, null, bitmapPath);
+            Note note = new Note(title, description, dateCreated, dateUpdated, MainActivity.location, categoryTitle, bitmapPath);
 
             noteViewModel.insert(note);
             Toast.makeText(getActivity(), R.string.note_saved, Toast.LENGTH_SHORT).show();
@@ -124,8 +129,9 @@ public class FragmentNotes extends Fragment implements SearchView.OnQueryTextLis
             Date dateCreated = (Date) data.getSerializableExtra(AddEditNoteActivity.EXTRA_DATE_CREATED);
             Date dateUpdated = (Date) data.getSerializableExtra(AddEditNoteActivity.EXTRA_DATE_UPDATED);
             String bitmapPath = data.getStringExtra(AddEditNoteActivity.EXTRA_IMAGE_PATH);
+            String categoryTitle = data.getStringExtra(AddEditNoteActivity.EXTRA_CATEGORY_TITLE);
 
-            Note note = new Note(title, description, dateCreated, dateUpdated, MainActivity.location, null, bitmapPath);
+            Note note = new Note(title, description, dateCreated, dateUpdated, MainActivity.location, categoryTitle, bitmapPath);
 
             int id = data.getIntExtra(AddEditNoteActivity.EXTRA_ID, -1);
             if (id == -1) {
@@ -137,8 +143,6 @@ public class FragmentNotes extends Fragment implements SearchView.OnQueryTextLis
             noteViewModel.update(note);
             Toast.makeText(getActivity(), R.string.note_updated, Toast.LENGTH_SHORT).show();
 
-        } else {
-            Toast.makeText(getActivity(), R.string.note_cancelled, Toast.LENGTH_SHORT).show();
         }
     }
 

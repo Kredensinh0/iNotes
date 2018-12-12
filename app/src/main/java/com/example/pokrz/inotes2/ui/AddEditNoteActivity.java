@@ -11,24 +11,31 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SearchView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.pokrz.inotes2.CategoryViewModel;
 import com.example.pokrz.inotes2.R;
+import com.example.pokrz.inotes2.entities.Category;
 import com.google.android.material.tabs.TabLayout;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProviders;
 
 public class AddEditNoteActivity extends AppCompatActivity {
 
@@ -38,6 +45,7 @@ public class AddEditNoteActivity extends AppCompatActivity {
     public static final String EXTRA_DATE_CREATED = "com.example.pokrz.inotes2.ui.EXTRA_DATE_CREATED";
     public static final String EXTRA_DATE_UPDATED = "com.example.pokrz.inotes2.ui.EXTRA_DATE_UPDATED";
     public static final String EXTRA_IMAGE_PATH = "com.example.pokrz.inotes2.ui.EXTRA_IMAGE_PATH";
+    public static final String EXTRA_CATEGORY_TITLE = "com.example.pokrz.inotes2.ui.EXTRA_CATEGORY_TITLE";
     private static final int PICK_IMAGE = 1;
 
     private EditText editTextTitle;
@@ -45,6 +53,8 @@ public class AddEditNoteActivity extends AppCompatActivity {
     private ImageView image_view_optional_photo;
     private Bitmap bitmap;
     private Uri bitmapPath;
+    private List<Category> categoriesList = new ArrayList<>();
+    private Spinner spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,8 +73,18 @@ public class AddEditNoteActivity extends AppCompatActivity {
         editTextDescription = findViewById(R.id.edit_text_description);
         image_view_optional_photo = findViewById(R.id.image_view_optional_photo);
 
-        Intent intent = getIntent();
+        CategoryViewModel categoryViewModel = ViewModelProviders.of(this).get(CategoryViewModel.class);
+        categoryViewModel.getAllCategories().observe(this, categories -> {
+            spinner = findViewById(R.id.category_spinner);
+            ArrayAdapter<Category> categoryArrayAdapter = new ArrayAdapter<Category>(this, android.R.layout.simple_spinner_item, categories);
+            categoryArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinner.setAdapter(categoryArrayAdapter);
+            categoriesList.clear();
+            categoriesList.addAll(categories);
+        });
 
+
+        Intent intent = getIntent();
         if (intent.hasExtra(EXTRA_ID)) {
             toolbarTitle.setText(R.string.edit_note);
             editTextTitle.setText(getIntent().getStringExtra(EXTRA_TITLE));
@@ -75,20 +95,27 @@ public class AddEditNoteActivity extends AppCompatActivity {
                     bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), bitmapPath);
                     image_view_optional_photo.setVisibility(View.VISIBLE);
                     image_view_optional_photo.setImageBitmap(bitmap);
-                    image_view_optional_photo.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            //TODO: powiększ foto na kliknięcie
-                        }
+                    image_view_optional_photo.setOnClickListener(view -> {
+                        //TODO: powiększ foto na kliknięcie
                     });
-
                 } catch (Exception e) {
                     e.printStackTrace();
+                }
+                String categoryTitle = intent.getStringExtra(EXTRA_CATEGORY_TITLE);
+                for(int i = 0 ; i < categoriesList.size(); i++) {
+                    if(categoriesList.get(i).getTitle().equals(categoryTitle)) {
+                        spinner.setSelection(i);
+                    }
                 }
             }
         } else {
             toolbarTitle.setText(R.string.add_note);
         }
+
+    }
+
+    public Category getSelectedCategory() {
+        return (Category) spinner.getSelectedItem();
     }
 
     private void saveNote() {
@@ -96,7 +123,7 @@ public class AddEditNoteActivity extends AppCompatActivity {
         String description = editTextDescription.getText().toString();
         Date currentDate = Calendar.getInstance().getTime();
         Date dateCreated = (Date) getIntent().getSerializableExtra(EXTRA_DATE_CREATED);
-
+        String categoryTitle = getSelectedCategory().getTitle();
         if (title.trim().isEmpty() || description.trim().isEmpty()) {
             Toast.makeText(this, R.string.note_cannot_be_empty, Toast.LENGTH_SHORT).show();
             return;
@@ -104,6 +131,7 @@ public class AddEditNoteActivity extends AppCompatActivity {
         Intent intent = new Intent();
         intent.putExtra(EXTRA_TITLE, title);
         intent.putExtra(EXTRA_DESCRIPTION, description);
+        intent.putExtra(EXTRA_CATEGORY_TITLE, categoryTitle);
         int id = getIntent().getIntExtra(EXTRA_ID, -1);
         if (id != -1) {
             intent.putExtra(EXTRA_ID, id);
@@ -112,11 +140,9 @@ public class AddEditNoteActivity extends AppCompatActivity {
             intent.putExtra(EXTRA_DATE_CREATED, currentDate);
         }
         intent.putExtra(EXTRA_DATE_UPDATED, currentDate);
-
         if (bitmapPath != null) {
             intent.putExtra(EXTRA_IMAGE_PATH, bitmapPath.toString());
         }
-
         setResult(RESULT_OK, intent);
         finish();
     }
@@ -163,7 +189,6 @@ public class AddEditNoteActivity extends AppCompatActivity {
             }
             try {
                 bitmapPath = data.getData();
-                Toast.makeText(this, bitmapPath.toString(), Toast.LENGTH_LONG).show();
                 bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), bitmapPath);
                 image_view_optional_photo.setImageBitmap(bitmap);
                 image_view_optional_photo.setVisibility(View.VISIBLE);
@@ -173,6 +198,3 @@ public class AddEditNoteActivity extends AppCompatActivity {
         }
     }
 }
-
-//TODO: category
-//TODO: search z filtered list category
