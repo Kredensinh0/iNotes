@@ -15,10 +15,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.example.pokrz.inotes2.CategoryViewModel;
 import com.example.pokrz.inotes2.R;
 import com.example.pokrz.inotes2.SectionsStatePagerAdapter;
+import com.example.pokrz.inotes2.entities.Category;
+import com.example.pokrz.inotes2.ui.adapters.CategoryAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
+import com.yarolegovich.lovelydialog.LovelyTextInputDialog;
 
 import java.util.Objects;
 
@@ -29,6 +34,9 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -40,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
     public static final int FRAGMENT_NOTES = 0;
     public static final int FRAGMENT_MAP = 1;
 
+    private CategoryViewModel categoryViewModel;
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
@@ -50,11 +60,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_hamburger_menu);
+
         ViewPager viewPager = findViewById(R.id.fragment_container);
         viewPagerSetup(viewPager);
 
@@ -63,8 +75,19 @@ public class MainActivity extends AppCompatActivity {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10, 10, locationListenerGPS);
             location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         }
-
         isLocationEnabled();
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        RecyclerView recyclerViewNavigation = navigationView.findViewById(R.id.recycler_view_navigation);
+        recyclerViewNavigation.setLayoutManager(new LinearLayoutManager(this));
+        CategoryAdapter categoryAdapter = new CategoryAdapter();
+        recyclerViewNavigation.setAdapter(categoryAdapter);
+
+        categoryViewModel = ViewModelProviders.of(this).get(CategoryViewModel.class);
+        categoryViewModel.getAllCategories().observe(this, categories -> {
+            categoryAdapter.setCategories(categories);
+        });
+
     }
 
     private void viewPagerSetup(ViewPager viewPager) {
@@ -77,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                if(tab.getPosition() == FRAGMENT_MAP) {
+                if (tab.getPosition() == FRAGMENT_MAP) {
                     FloatingActionButton fab = findViewById(R.id.fab);
                     CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) fab.getLayoutParams();
                     lp.anchorGravity = Gravity.BOTTOM | GravityCompat.START;
@@ -89,7 +112,6 @@ public class MainActivity extends AppCompatActivity {
                     fab.setLayoutParams(lp);
                 }
                 viewPager.setCurrentItem(tab.getPosition());
-
             }
 
             @Override
@@ -105,12 +127,43 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
         switch (item.getItemId()) {
             case android.R.id.home:
                 DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
                 drawerLayout.openDrawer(GravityCompat.START);
+                break;
+            case R.id.main_menu_add_category:
+                new LovelyTextInputDialog(this)
+                        .setTopColorRes(R.color.colorPrimary)
+                        .setTitle("New category title: ")
+                        .setIcon(R.drawable.ic_add_to_collection)
+                        .setInputFilter(R.string.cancel, new LovelyTextInputDialog.TextFilter() {
+                            @Override
+                            public boolean check(String text) {
+//                                return text.matches("\\w+");
+                                return true;
+                            }
+                        })
+                        .setConfirmButton(android.R.string.ok, new LovelyTextInputDialog.OnTextInputConfirmListener() {
+                            @Override
+                            public void onTextInputConfirmed(String text) {
+                                if (!text.trim().isEmpty()) {
+                                    categoryViewModel.insert(new Category(text));
+                                }
+                                Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .show();
                 break;
         }
         return true;
@@ -170,3 +223,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }
+
+
+//TODO: add onClickListener to categories and adjust filter in notes adapter

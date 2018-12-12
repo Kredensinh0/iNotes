@@ -1,6 +1,6 @@
 package com.example.pokrz.inotes2.daos;
 
-import com.example.pokrz.inotes2.entities.Note;
+import com.example.pokrz.inotes2.entities.Category;
 
 import java.util.List;
 
@@ -12,18 +12,18 @@ import androidx.room.Query;
 import androidx.room.Update;
 
 @Dao
-public interface NoteDao  {
+public interface CategoryDao {
 
     @Insert
-    void insert(Note data);
+    void insert(Category data);
 
     @Delete
-    void delete(Note data);
+    void delete(Category data);
 
     @Update
-    void update(Note data);
+    void update(Category data);
 
-    @Query("SELECT * FROM note")
-    LiveData<List<Note>> getAllNotes();
+    @Query("SELECT * FROM category")
+    LiveData<List<Category>> getAllCategories();
 
 }

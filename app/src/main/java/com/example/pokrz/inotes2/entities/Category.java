@@ -1,14 +1,17 @@
 package com.example.pokrz.inotes2.entities;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity
 public class Category {
 
+    @PrimaryKey(autoGenerate = true)
     private int id;
     private String title;
-    private String color;
 
-    public Category(String title, String color) {
+    public Category(String title) {
         this.title = title;
-        this.color = color;
     }
 
     public int getId() {
@@ -27,11 +30,4 @@ public class Category {
         this.title = title;
     }
 
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
-    }
 }

@@ -1,8 +1,6 @@
 package com.example.pokrz.inotes2.ui;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.SearchView;
 import android.widget.Toast;
 
-import com.example.pokrz.inotes2.NoteAdapter;
+import com.example.pokrz.inotes2.ui.adapters.NoteAdapter;
 import com.example.pokrz.inotes2.NoteViewModel;
 import com.example.pokrz.inotes2.R;
 import com.example.pokrz.inotes2.entities.Note;
