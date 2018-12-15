@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.pokrz.inotes2.R;
+import com.example.pokrz.inotes2.entities.Category;
 import com.example.pokrz.inotes2.entities.Note;
 
 import java.io.IOException;

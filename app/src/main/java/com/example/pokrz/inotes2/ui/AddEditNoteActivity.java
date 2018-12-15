@@ -80,7 +80,7 @@ public class AddEditNoteActivity extends AppCompatActivity {
             spinner = findViewById(R.id.category_spinner);
             ArrayList<Category> categoriesFinal = new ArrayList<>(categories);
             categoriesFinal.remove(0);
-            ArrayAdapter<Category> categoryArrayAdapter = new ArrayAdapter<Category>(this, android.R.layout.simple_spinner_item, categoriesFinal);
+            ArrayAdapter<Category> categoryArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categoriesFinal);
             categoryArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinner.setAdapter(categoryArrayAdapter);
             categoriesList = categoriesFinal;
@@ -96,7 +96,7 @@ public class AddEditNoteActivity extends AppCompatActivity {
             }
 
         });
-        
+
         setupNote();
     }
 
@@ -123,6 +123,7 @@ public class AddEditNoteActivity extends AppCompatActivity {
             toolbarTitle.setText(R.string.add_note);
         }
     }
+
     public Category getSelectedCategory() {
         return (Category) spinner.getSelectedItem();
     }

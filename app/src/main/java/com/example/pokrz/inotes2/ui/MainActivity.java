@@ -9,10 +9,12 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.pokrz.inotes2.CategoryViewModel;
@@ -27,6 +29,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
+import com.yarolegovich.lovelydialog.LovelyChoiceDialog;
+import com.yarolegovich.lovelydialog.LovelyStandardDialog;
 import com.yarolegovich.lovelydialog.LovelyTextInputDialog;
 
 import java.util.List;
@@ -40,6 +44,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -56,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
     private LocationManager locationManager;
     private CategoryViewModel categoryViewModel;
     private List<Category> categoryList;
+    private List<Note> notesList;
+    private NoteViewModel noteViewModel;
     public static CategoryDrawerAdapter categoryAdapter;
 
     @Override
@@ -97,21 +104,32 @@ public class MainActivity extends AppCompatActivity {
             categoryAdapter.setCategories(categories);
         });
 
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
-            @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                return false;
-            }
+        noteViewModel = ViewModelProviders.of(this).get(NoteViewModel.class);
+        noteViewModel.getAllNotes().observe(this, notes -> {
+            notesList = notes;
+        });
 
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                //TODO: dialog popup with warning, delete all notes with chosen category and then delete category
-//                Category category = categoryList.get(viewHolder.getAdapterPosition());
-//                categoryViewModel.delete(category);
-//                Snackbar.make(findViewById(R.id.fragment_container), "Category has been deleted!", Snackbar.LENGTH_LONG).show();
+        categoryAdapter.setOnLongClickListener(category -> {
+            if (!category.getTitle().equals("All notes") && !category.getTitle().equals("Uncategorized")) {
+                new LovelyStandardDialog(this, LovelyStandardDialog.ButtonLayout.HORIZONTAL)
+                        .setTopColorRes(R.color.colorPrimary)
+                        .setButtonsColorRes(R.color.colorPrimaryDark)
+                        .setTitle("Delete category")
+                        .setIcon(R.drawable.ic_remove)
+                        .setMessage("Warning! All notes belonging to this category will be deleted!")
+                        .setPositiveButton(android.R.string.ok, v -> {
+                            for (Note n : notesList) {
+                                if (n.getCategoryTitle().equals(category.getTitle())) {
+                                    noteViewModel.delete(n);
+                                }
+                            }
+                            categoryViewModel.delete(category);
+                            Toast.makeText(this, "Category has been deleted!", Toast.LENGTH_SHORT).show();
+                        })
+                        .setNegativeButton(android.R.string.no, null)
+                        .show();
             }
-        }).attachToRecyclerView(recyclerViewNavigation);
-
+        });
     }
 
     private void viewPagerSetup(ViewPager viewPager) {
@@ -194,7 +212,8 @@ public class MainActivity extends AppCompatActivity {
         return (res == PackageManager.PERMISSION_GRANTED);
     }
 
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String permissions[],
+                                           int[] grantResults) {
         switch (requestCode) {
             case 1: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {

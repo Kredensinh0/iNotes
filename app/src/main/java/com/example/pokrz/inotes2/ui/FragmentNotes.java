@@ -35,7 +35,7 @@ public class FragmentNotes extends Fragment implements SearchView.OnQueryTextLis
 
     private NoteViewModel noteViewModel;
     private FloatingActionButton floatingActionButton;
-    private NoteAdapter noteAdapter;
+    static NoteAdapter noteAdapter;
 
     @Nullable
     @Override
@@ -81,13 +81,13 @@ public class FragmentNotes extends Fragment implements SearchView.OnQueryTextLis
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 if (dy > 0 || dy < 0 && floatingActionButton.isShown())
                     floatingActionButton.hide();
             }
 
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     floatingActionButton.show();
                 }
@@ -99,9 +99,7 @@ public class FragmentNotes extends Fragment implements SearchView.OnQueryTextLis
         SearchView searchView = toolbar.findViewById(R.id.search_view_toolbar);
         searchView.setOnQueryTextListener(this);
 
-        MainActivity.categoryAdapter.setOnItemClickListener(category -> {
-            noteAdapter.getFilter().filter("cat:" + category.getTitle());
-        });
+        MainActivity.categoryAdapter.setOnItemClickListener(category -> noteAdapter.getFilter().filter("cat:" + category.getTitle()));
         return view;
     }
 
