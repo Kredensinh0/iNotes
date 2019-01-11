@@ -49,13 +49,11 @@ public class NoteAdapter extends ListAdapter<Note, NoteAdapter.NoteHolder> imple
 
         @Override
         public boolean areContentsTheSame(Note oldItem, Note newItem) {
-            return oldItem.getTitle().equals(newItem.getTitle()) &&
-                    oldItem.getDescription().equals(newItem.getDescription()) &&
-                    oldItem.getLocation().equals(newItem.getLocation()) &&
-                    oldItem.getDateCreated().equals(newItem.getDateCreated()) &&
-                    oldItem.getDateLastUpdated().equals(newItem.getDateLastUpdated()) &&
-                    oldItem.getCategoryTitle().equals(newItem.getCategoryTitle()) &&
-                    oldItem.getOptionalImagePath().equals(newItem.getOptionalImagePath());
+                return oldItem.getTitle().equals(newItem.getTitle()) &&
+                        oldItem.getDescription().equals(newItem.getDescription()) &&
+                        oldItem.getDateCreated().equals(newItem.getDateCreated()) &&
+                        oldItem.getDateLastUpdated().equals(newItem.getDateLastUpdated()) &&
+                        oldItem.getCategoryTitle().equals(newItem.getCategoryTitle());
         }
     };
 
@@ -197,7 +195,7 @@ public class NoteAdapter extends ListAdapter<Note, NoteAdapter.NoteHolder> imple
             imageViewOptionalPhoto = itemView.findViewById(R.id.image_view_optional_photo);
 
             itemView.setOnClickListener(view -> {
-                int position = getAdapterPosition();
+                int position = NoteHolder.this.getAdapterPosition();
                 if (onItemClickListener != null && position != RecyclerView.NO_POSITION) {
                     onItemClickListener.onItemClick(getItem(position));
                 }
@@ -207,7 +205,6 @@ public class NoteAdapter extends ListAdapter<Note, NoteAdapter.NoteHolder> imple
 
     public interface OnItemClickListener {
         void onItemClick(Note note);
-
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {

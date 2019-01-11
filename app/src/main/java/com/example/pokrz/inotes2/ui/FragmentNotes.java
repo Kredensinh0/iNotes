@@ -1,5 +1,6 @@
 package com.example.pokrz.inotes2.ui;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -30,12 +31,12 @@ import static android.app.Activity.RESULT_OK;
 
 public class FragmentNotes extends Fragment implements SearchView.OnQueryTextListener {
 
-    public static final int ADD_NOTE_REQUEST = 0;
-    public static final int EDIT_NOTE_REQUEST = 1;
+    private static final int ADD_NOTE_REQUEST = 0;
+    private static final int EDIT_NOTE_REQUEST = 1;
 
     private NoteViewModel noteViewModel;
     private FloatingActionButton floatingActionButton;
-    static NoteAdapter noteAdapter;
+    @SuppressLint("StaticFieldLeak") static NoteAdapter noteAdapter;
 
     @Nullable
     @Override
@@ -140,7 +141,6 @@ public class FragmentNotes extends Fragment implements SearchView.OnQueryTextLis
             note.setId(id);
             noteViewModel.update(note);
             Toast.makeText(getActivity(), R.string.note_updated, Toast.LENGTH_SHORT).show();
-
         }
     }
 

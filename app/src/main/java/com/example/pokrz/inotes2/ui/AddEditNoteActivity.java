@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 import androidx.annotation.Nullable;
@@ -54,7 +53,6 @@ public class AddEditNoteActivity extends AppCompatActivity {
     private ImageView image_view_optional_photo;
     private Bitmap bitmap;
     private Uri bitmapPath;
-    private List<Category> categoriesList = new ArrayList<>();
     private Spinner spinner;
 
     @Override
@@ -74,29 +72,26 @@ public class AddEditNoteActivity extends AppCompatActivity {
         editTextTitle = findViewById(R.id.edit_text_title);
         editTextDescription = findViewById(R.id.edit_text_description);
         image_view_optional_photo = findViewById(R.id.image_view_optional_photo);
+        spinner = findViewById(R.id.category_spinner);
 
         CategoryViewModel categoryViewModel = ViewModelProviders.of(this).get(CategoryViewModel.class);
         categoryViewModel.getAllCategories().observe(this, categories -> {
-            spinner = findViewById(R.id.category_spinner);
             ArrayList<Category> categoriesFinal = new ArrayList<>(categories);
             categoriesFinal.remove(0);
             ArrayAdapter<Category> categoryArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categoriesFinal);
             categoryArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinner.setAdapter(categoryArrayAdapter);
-            categoriesList = categoriesFinal;
-
             Intent intent = getIntent();
-            if (intent.hasExtra(EXTRA_ID)) {
+            if (!categoriesFinal.isEmpty() && intent.hasExtra(EXTRA_CATEGORY_TITLE)) {
                 String categoryTitle = intent.getStringExtra(EXTRA_CATEGORY_TITLE);
-                for (int i = 0; i < categoriesList.size(); i++) {
-                    if (categoriesList.get(i).getTitle().equals(categoryTitle)) {
+                for (int i = 0; i < categoriesFinal.size(); i++) {
+                    if (categoriesFinal.get(i).getTitle().equals(categoryTitle)) {
                         spinner.setSelection(i);
+                        return;
                     }
                 }
             }
-
         });
-
         setupNote();
     }
 
@@ -113,7 +108,9 @@ public class AddEditNoteActivity extends AppCompatActivity {
                     image_view_optional_photo.setVisibility(View.VISIBLE);
                     image_view_optional_photo.setImageBitmap(bitmap);
                     image_view_optional_photo.setOnClickListener(view -> {
-                        //TODO: powiększ foto na kliknięcie
+                        Intent intent1 = new Intent(AddEditNoteActivity.this, PhotoViewActivity.class);
+                        intent1.putExtra(EXTRA_IMAGE_PATH, bitmapPath);
+                        startActivity(intent1);
                     });
                 } catch (Exception e) {
                     e.printStackTrace();

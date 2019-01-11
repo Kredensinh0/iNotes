@@ -24,7 +24,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-
         <uses-library android:name="com.google.android.maps" />
         <uses-library
             android:name="org.apache.http.legacy"
@@ -33,14 +32,14 @@
         <activity android:name=".ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name=".ui.AddEditNoteActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:launchMode="singleTask"
+                android:launchMode="singleInstance"
                 android:value=".ui.MainActivity" />
         </activity>
 
@@ -56,6 +55,9 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
+        <activity android:name=".ui.PhotoViewActivity"
+            android:theme="@style/AppThemeTransparent"
+            android:parentActivityName=".ui.AddEditNoteActivity"/>
     </application>
 
 </manifest>

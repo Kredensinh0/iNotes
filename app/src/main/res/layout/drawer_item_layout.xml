@@ -19,6 +19,7 @@
         android:id="@+id/text_view_category_title_drawer_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:foreground="?android:attr/selectableItemBackground"
         android:layout_alignParentStart="true"
         android:textSize="17sp" />
 

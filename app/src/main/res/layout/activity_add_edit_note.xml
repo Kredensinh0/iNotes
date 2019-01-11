@@ -61,9 +61,12 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginEnd="24dp"
+            android:layout_marginBottom="8dp"
+            android:adjustViewBounds="true"
+            android:maxHeight="150dp"
+            android:scaleType="fitCenter"
             android:visibility="visible"
             tools:srcCompat="@tools:sample/avatars" />
-
 
 
     </RelativeLayout>
